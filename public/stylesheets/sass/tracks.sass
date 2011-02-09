@@ -34,6 +34,7 @@
       a
         :background-image url(../images/icons/play.png) 
     &.download-button
+      :display none
       :margin-left 1px
       a
         :background-image url(../images/icons/download.png)
@@ -45,7 +46,6 @@
     :padding-top 10px
     a
       :font-size = 18px
-      :margin-left 20px
       :text-decoration none
     span.by
       :font-size = 12px
@@ -79,12 +79,11 @@
       :background-color = !box_background_even
   &.hover, &.open
     div.button, div.title
-      :background-image url(../images/backgrounds/tracks.png) 
-      :background-position 0px 0px
+      :background-color #fff
   &.playing
     div.button, div.title
       :background-image url(../images/backgrounds/tracks.png)
-      :background-position 420px 0px
+      :background-color #fff
     div.button
       a
         :background-position -100px 0px
