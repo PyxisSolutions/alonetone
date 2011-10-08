@@ -32,15 +32,17 @@ class User < ActiveRecord::Base
   named_scope :alpha, { :order => 'display_name' }
   
   # Can create music
+  has_one    :pic,           :as => :picable
   has_many   :assets,        :dependent => :destroy, :order => 'assets.id DESC'
   has_many   :playlists,     :dependent => :destroy, :order => 'playlists.position', :include => :pic
-  has_one    :pic,           :as => :picable
   has_many   :comments,      :dependent => :destroy, :order => 'id DESC', :include => [:commenter => :pic]
   has_many   :user_reports,  :dependent => :destroy, :order => 'id DESC'
-  has_many :tracks
+  has_many   :tracks
   
   acts_as_mappable
   before_validation :geocode_address
+
+  reportable :weekly, :aggregation => :count, :grouping => :week
 
   # alonetone plus
   has_many :source_files
@@ -89,6 +91,8 @@ class User < ActiveRecord::Base
   
   before_create :make_first_user_admin, :make_activation_code
   
+  before_destroy :efficiently_destroy_relations
+  
   def listened_to_today_ids
     listens.find(:all, 
       :select     =>  'listens.asset_id', 
@@ -130,8 +134,7 @@ class User < ActiveRecord::Base
   end
   
   def new_tracks_from_followees(limit)
-    Asset.find(:all, :limit => limit, :order => 'assets.created_at DESC',
-     :conditions => {:user_id => followee_ids})
+    Asset.new_tracks_from_followees(self,{:page => 1, :per_page => limit})
   end
   
   def follows_user_ids
@@ -159,13 +162,19 @@ class User < ActiveRecord::Base
     updated_at_will_change!
     save
   end
-  
-  protected
-  
-  def followee_ids
-    follows.find(:all, :select => 'user_id').collect(&:user_id)
-  end
 
+  protected
+
+  def efficiently_destroy_relations
+    tracks.delete_all
+    playlists.delete_all
+    Listen.delete_all(['track_owner_id = ?',id])
+    Listen.delete_all(['listener_id = ?',id])
+    posts.delete_all
+    topics.delete_all
+    comments.delete_all
+    assets.delete_all
+  end
   
   def make_first_user_admin
     self.admin = true if User.count == 0

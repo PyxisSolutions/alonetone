@@ -91,7 +91,7 @@ class ApplicationController < ActionController::Base
 
   def find_asset
     @asset = Asset.find_by_permalink(params[:permalink] || params[:id])
-    @asset = Asset.find(params[:id]) if !@asset && params[:id]
+    @asset ||= Asset.find(params[:id]) if params[:id]
   end
   
   def find_playlists
@@ -108,6 +108,10 @@ class ApplicationController < ActionController::Base
   
   def moderator?
     logged_in? && current_user.moderator?
+  end
+  
+  def moderator_required
+    login_required && current_user.moderator?
   end
   
   def admin_required

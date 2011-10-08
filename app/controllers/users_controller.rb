@@ -3,7 +3,7 @@ class UsersController < ApplicationController
   skip_before_filter :update_last_seen_at, :only => [:create, :new, :activate, :sudo]
   before_filter :find_user,      :except => [:new, :create]
   
-  before_filter :login_required, :except => [:index, :show, :new, :create, :activate, :bio]
+  before_filter :login_required, :except => [:index, :show, :new, :create, :activate, :bio, :destroy]
   skip_before_filter :login_by_token, :only => :sudo
   
   rescue_from NoMethodError, :with => :user_not_found
@@ -124,6 +124,7 @@ class UsersController < ApplicationController
       # Did the user already activate, and this is just a forgot password "activation?"
       if current_user.activated_at 
         current_user.activate
+        cookies[:auth_token] = { :value => self.current_user.token , :expires => 2.weeks.from_now }
         flash[:ok] = "Sweet, you are back in! <br/>Now quick, update your password below so you don't have to jump through hoops again"
         redirect_to edit_user_path(current_user)
       else
@@ -215,11 +216,12 @@ class UsersController < ApplicationController
   end
 
   def destroy
-    return unless admin?
-    @user.destroy
-    respond_to do |format|
-      format.html { redirect_to users_path }
-      format.xml  { head 200 }
+    if admin_or_owner_with_delete
+      flash[:ok] = "The alonetone account #{@user.login} has been permanently deleted."
+      @user.destroy # this will run "efficiently_destroy_relations" before_destory callback
+      redirect_to logout_path
+    else
+      redirect_to root_path 
     end
   end
   

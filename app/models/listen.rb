@@ -16,6 +16,9 @@ class Listen < ActiveRecord::Base
     :counter_cache  => true
   
   validates_presence_of :asset_id, :track_owner_id
+
+  reportable :weekly, :aggregation => :count, :grouping => :week
+  
   
   def source
     self[:source] || 'alonetone'
@@ -75,12 +78,15 @@ class Listen < ActiveRecord::Base
     )
   end
   
-  def self.count_by_ip
-    Listen.count(:all, :group => :ip, :conditions => ['created_at > ?',60.days.ago], :order => 'count_all DESC', :limit => 25)
+  def self.most_active_ips(limit=25)
+    Listen.count(:all, :group => :ip, :conditions => ['created_at > ?',30.days.ago], :order => 'count_all DESC', :limit => limit)
   end
   
-  def self.count_by_track
-    Listen.count(:all, :group => :asset, :conditions => ['created_at > ?',60.days.ago], :order => 'count_all DESC', :limit => 25)
+  def self.most_active_tracks(limit=25)
+    Listen.count(:all, 
+                 :from => "listens IGNORE INDEX(index_listens_on_asset_id)",
+                 :group => :asset, 
+                 :conditions => ['created_at > ?',30.days.ago], :order => 'count_all DESC', :limit => limit)
   end
   
   def self.find_user_by_ip(ip)

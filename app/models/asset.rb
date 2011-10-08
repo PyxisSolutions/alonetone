@@ -44,6 +44,8 @@ class Asset < ActiveRecord::Base
   
   has_many :listens, :dependent => :destroy
 
+  reportable :weekly, :aggregation => :count, :grouping => :week
+
   has_many :listeners, 
     :through  => :listens, 
     :order    => 'listens.created_at DESC', 
@@ -54,16 +56,16 @@ class Asset < ActiveRecord::Base
     :source     =>  :user, 
     :through    =>  :tracks, 
     :conditions => {'tracks.is_favorite' => true}, 
-    :order      =>  'tracks.created_at DESC', 
-    :include    =>  :pic
+    :order      =>  'tracks.created_at DESC'
+    # :include    =>  :picable   
   
   has_one :first_playlist,
     :source      =>  :playlist,
     :through     =>  :tracks,
     :conditions  => {'playlists.is_favorite' => false, 'tracks.is_favorite' => false,
       'playlists.user_id' => '#{user_id}' },
-    :order       => 'tracks.created_at ASC',
-    :include     => :pic  
+    :order       => 'tracks.created_at ASC'
+    #:include     => :picable
   
   has_many :comments, 
     :as         => :commentable,  

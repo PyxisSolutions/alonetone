@@ -4,21 +4,22 @@ class AssetsController < ApplicationController
   before_filter :find_asset, :only => [:show, :edit, :update, :destroy, :stats]
   
   # we check to see if the current_user is authorized based on the asset.user
-  before_filter :login_required, :except => [:index, :show, :latest, :radio]
+  before_filter :login_required, :except => [:index, :show, :latest, :radio, :listen_feed]
   before_filter :set_user_agent, :find_referer, :prevent_abuse, :only => :show
   
   #rescue_from NoMethodError, :with => :user_not_found
   #rescue_from ActiveRecord::RecordNotFound, :with => :not_found
 
   # cfnetwork = Safari on osx 10.4 *only* when it tries to download
-  @@valid_listeners = ['msie','webkit','quicktime','gecko','mozilla','netscape','itunes','chrome','opera', 'safari','cfnetwork','facebookexternalhit']
+  @@valid_listeners = ['msie','webkit','quicktime','gecko','mozilla','netscape','itunes','chrome','opera', 'safari','cfnetwork','facebookexternalhit','ipad','iphone','apple']
   @@bots = ['bot','spider','baidu']
   @@bad_ip_ranges = ['195.239', '220.181', '61.135', '60.28.232', '121.14', '221.194']
+  
   
   # GET /assets
   # GET /assets.xml
   def index
-      @page_title = @user.name + "'s uploaded music (mp3)"
+      @page_title = "All music by " + @user.name 
 
       @assets = @user.assets.paginate(:all, 
         :order    => 'created_at DESC', 
@@ -114,7 +115,6 @@ class AssetsController < ApplicationController
     @page_title = "alonetone Radio: #{@channel}" 
     @assets = Asset.radio(params[:source], params, current_user)
     @safari = request.env['HTTP_USER_AGENT'].to_s.include? 'AppleWebKit'
-    render :partial => 'assets/asset', :collection => @assets, :layout => false if request.xhr?
   end
   
   def top
@@ -200,7 +200,7 @@ class AssetsController < ApplicationController
     else
       flash[:error] = if (@assets.size == 0)
         "Oh noes! Either that file was not an mp3 or you didn't actually pick a file to upload. " <<
-        "Need help? Search or ask for help the forums or email sudara@alonetone.com" 
+        "Need help? Search or ask for help the forums or email support@alonetone.com" 
       else
         flashes
       end
@@ -247,14 +247,8 @@ class AssetsController < ApplicationController
     end
   end
   
-  FEED_SQL = <<-ESQL
-    SELECT DISTINCT a.* FROM assets a INNER JOIN users u ON (a.user_id = u.id) INNER JOIN followings f ON (f.user_id = u.id) WHERE f.follower_id = :user_id ORDER BY a.created_at DESC LIMIT 15
-  ESQL
-  
   def listen_feed
-    # Note that there is a method User#new_tracks_from_followees. Ideally that method should be refactored
-    # to use this query kind rather than a double-query and IN subquery and then this method can call it.
-    @tracks = Asset.find_by_sql( [FEED_SQL,{:user_id => @user.id}] )
+    @tracks = @user.new_tracks_from_followees(15)
     respond_to do |format|
       format.rss
     end
@@ -303,7 +297,7 @@ class AssetsController < ApplicationController
     ip = request.remote_ip
     return true unless present? request.user_agent 
     return true if @@bad_ip_ranges.any?{|cloaked_ip| ip.match /^#{cloaked_ip}/  } # check bad ips that fake user agent
-    not browser? or @@bots.any?{|bot_agent| @agent.include? bot_agent} # check user agent
+    not browser? or @@bots.any?{|bot_agent| @agent.include? bot_agent} # check user agent agaisnt both white and black lists
   end
   
   def browser?
