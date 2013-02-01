@@ -16,14 +16,14 @@ ssh alonetone '
   
   git fetch; 
   
-  if [[ $(git diff origin/master Gemfile) > "" ]]; 
+  if [[ $(git diff origin/rails2 Gemfile) > "" ]]; 
     then 
       echo "Gemfile changed, bundle installing...";
-      git reset --hard origin/master; bundle install --deployment; 
+      git reset --hard origin/rails2; bundle install --deployment; 
       echo
     else 
       echo "skipping bundle install, gemfile has not changed since last time.";
-      git reset --hard origin/master;
+      git reset --hard origin/rails2;
       echo
   fi
   
