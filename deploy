@@ -16,16 +16,8 @@ ssh alonetone '
   
   git fetch; 
   
-  if [[ $(git diff origin/rails2 Gemfile) > "" ]]; 
-    then 
-      echo "Gemfile changed, bundle installing...";
-      git reset --hard origin/rails2; bundle install --deployment; 
-      echo
-    else 
-      echo "skipping bundle install, gemfile has not changed since last time.";
-      git reset --hard origin/rails2;
-      echo
-  fi
+  git reset --hard origin/rails2; bundle install --deployment; 
+
   
   rm -f /data/alonetone/current/public/javascripts/allonetone.js
   rm -f /data/alonetone/current/public/stylesheets/alonetone-v2.css
