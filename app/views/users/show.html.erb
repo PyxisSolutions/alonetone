@@ -25,9 +25,9 @@
 		<% content_for :left do %>
         <%= render :partial => 'latest' if @user.assets_count > 0 %>
 
-    	  <%= render :partial => 'favorites' if present?(@favorites) %>
+    	  <%= render :partial => 'favorites' if @favorites.present? %>
     
-        <%= render :partial => 'follows' if present?(@mostly_listens_to) or present?(@follows)  %>
+        <%= render :partial => 'follows' if @mostly_listens_to.present? or @follows.present?  %>
     	  
     	  <%= render :partial => 'listens' if @listens.size > 0 %>	
     		
@@ -37,7 +37,7 @@
 	  <% end %>
 	  
 	  <% content_for :right do %>
-    	  <%= render :partial => 'popular' if present?(@popular_tracks) && (setting('most_popular', @user) == 'true')%>
+    	  <%= render :partial => 'popular' if @popular_tracks.present? && (setting('most_popular', @user) == 'true')%>
     	 
     	  <% #cache(cache_digest(@comments)) do # doesn't work if new private comments show, also date/times are off  %>
     	    <%= render :partial => 'shared/comments' if @comments.size > 0 %>

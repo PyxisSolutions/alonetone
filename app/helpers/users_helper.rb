@@ -21,9 +21,9 @@ module UsersHelper
   end
   
   def user_location(user)
-    if (user.present?(:city) && user.present?(:country))
+    if user.city.present? && user.country.present?
       "from #{[user.city.strip, user.country.strip].compact.join(', ')}" 
-    elsif (user.present?(:city) || user.present?(:country))
+    elsif user.city.present? || user.country.present?
       "from #{[user.city.strip, user.country.strip].compact.to_s}" 
     end
   end
@@ -40,7 +40,7 @@ module UsersHelper
   end
   
   def notice_hidden?(notice)
-    logged_in? && current_user.present?(:settings) && current_user.settings.present?('hide_notice') && current_user.settings['hide_notice'].present?(notice)
+    logged_in? && current_user.settings.present? && current_user.settings['hide_notice'].present? && current_user.settings['hide_notice'][notice].present?
   end
   
   def setting(symbol_or_string, user=current_user)

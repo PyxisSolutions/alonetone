@@ -294,7 +294,7 @@ class AssetsController < ApplicationController
   
   def bot?
     ip = request.remote_ip
-    return true unless present? request.user_agent 
+    return true unless request.user_agent.present?
     return true if @@bad_ip_ranges.any?{|cloaked_ip| ip.match /^#{cloaked_ip}/  } # check bad ips that fake user agent
     not browser? or @@bots.any?{|bot_agent| @agent.include? bot_agent} # check user agent agaisnt both white and black lists
   end

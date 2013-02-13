@@ -22,7 +22,7 @@
     <%= pagination @posts %>
 </div>
 
-<% if present? @posts %>
+<% if @posts.present? %>
 <%= render :partial => 'posts/posts' %>
 <% else %>
   <h2>:( Sorry, nobody has bothered to talk about '<%=h params[:forum_q]%>' before</h2>
