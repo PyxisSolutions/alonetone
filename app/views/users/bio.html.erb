@@ -7,7 +7,7 @@
 
         <div class="bio static_content">
         	<p>
-        	    <% if @user.bio.present?) %>
+        	    <% if @user.bio.present? %>
         	        <%= @user.printable_bio %>
         	    <% else %>
         	        <%=h @user.name %> doesn't have anything to say, unfortunately...
