@@ -81,7 +81,7 @@ class ApplicationController < ActionController::Base
   
   def find_user
     login = params[:login] || params[:id]
-    @user = User.find_by_login(login) || current_user 
+    @user = User.find_by_login(login) || current_user || raise(ActionController::RoutingError, 'user not found')
   end
 
   def current_user_is_admin_or_owner?(user)

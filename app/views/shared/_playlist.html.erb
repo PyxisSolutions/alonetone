@@ -4,5 +4,5 @@
 
     <%= image_tag(playlist.cover(:large), :class => 'cover_125', :alt => "#{h(playlist.title)} by #{h(playlist.user.name)}") %>
 	  
-	<%= link_to(h(playlist.title)+(playlist.year.present?) ? " (#{playlist.year})" : ''), user_playlist_path(playlist.user.login, playlist), :class => 'small_playlist_title',:title => "#{h(playlist.title)} by #{h(playlist.user.name)}" ) %> 
+	<%= link_to(h(playlist.title)+(playlist.year.present? ? " (#{playlist.year})" : ''), user_playlist_path(playlist.user.login, playlist), :class => 'small_playlist_title',:title => "#{h(playlist.title)} by #{h(playlist.user.name)}" ) %> 
 <% end %>
