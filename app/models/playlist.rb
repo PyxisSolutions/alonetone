@@ -106,13 +106,20 @@ class Playlist < ActiveRecord::Base
     )
   end
   
-  protected 
+   
   
   # playlist is a mix if there is at least one track with a track from another user  
   def set_mix_or_album
-    self.is_mix = self.tracks.any?{ |track| track.asset.user.id.to_s != self.user.id.to_s}
+    # is this a favorites playlist?
+    is_mix = true if is_favorite? and return true
+    is_mix = true if tracks.present? and contains_tracks_from_others
     true
   end
+  
+  def contains_tracks_from_others
+    tracks.count > tracks.count(:all, :joins => :asset, :conditions => ['assets.user_id = ?',user.id])
+  end
+
   
   # if this is a "favorites" playlist, give it a name/description to match
   def auto_name_favorites
