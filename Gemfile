@@ -1,4 +1,4 @@
-source :gemcutter
+source "https://rubygems.org"
 gem "rails", "2.3.17"
 #gem "mongrel", :require => nil
 #gem "mongrel_cluster"
@@ -22,7 +22,7 @@ gem 'rubyzip',       :require => 'zip/zip'
 gem 'googlecharts',  :require => 'gchart'
 gem 'haml', '2.0.9'
 
-gem 'newrelic_rpm'
+gem "newrelic_rpm", "~> 3.5.8.72"
 gem 'BlueCloth',     :require => 'bluecloth' 
 
 gem 'hpricot' # for comment processing / markdown fixing
