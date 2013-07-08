@@ -1,7 +1,6 @@
 source "https://rubygems.org"
-gem "rails", "2.3.17"
-#gem "mongrel", :require => nil
-#gem "mongrel_cluster"
+gem "rails", "2.3.18"
+
 gem "mysql2", "~> 0.2.7"
 
 gem "unicorn"
