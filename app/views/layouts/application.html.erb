@@ -22,6 +22,7 @@
       <script type="text/javascript" src="http://use.typekit.com/<%= Alonetone.typekit %>.js"></script>
       <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
     <% end %>
+      <%= javascript_include_tag "application" %>
   
       <!-- render user specific variables and js helpers -->
       <%= render :partial => 'shared/javascript_payload' %>
@@ -75,7 +76,6 @@
     </div>
 
 		<%= render :partial => 'shared/footer' %>
-    <%= javascript_include_tag "application" %>
     <%= render :partial => 'shared/analytics' %>
   </body>
 </html>

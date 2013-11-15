@@ -1,6 +1,7 @@
 source "https://rubygems.org"
 
 gem "rails", "4.0.1"
+gem "turbolinks"
 
 # server
 gem "mysql2", "0.3.11"
